@@ -16,7 +16,8 @@ class YOLOChooser:
      
         self.models = {  # model yollarını hazırlamakm için yapılan  python sözlüğüdür (dict:anahtar veri yapısıdır anahtar str olmalı)
             "spine":YOLO(os.path.join(base_path, "models/spine.pt")),
-            "elbow":YOLO(os.path.join(base_path,"models/elbow.pt"))
+            "elbow":YOLO(os.path.join(base_path,"models/elbow.pt")),
+            "Knee":YOLO(os.path.join(base_path,"models/knee.pt"))
         }
 
     def predict(self, image_path: str): # model  tahmin yapısıdır
@@ -25,8 +26,11 @@ class YOLOChooser:
         
          
         
-        probs = result.probs.data.tolist() #tüm olasılıklarıu listekler
+        probs= result.probs.data.tolist() #tüm olasılıklarıu listekler
         names = result.names #class isimleri sözlüğü
+     
+        class_id=result.probs.top1
+        top1_name = names[class_id]
 
     
         indexed_probs = list(enumerate(probs)) #olasılıkları indexleri ile birlikte listeler
@@ -66,19 +70,35 @@ class YOLOChooser:
         #       }
 
         return {
-             "top5_predictions": top5_results
+             "top5_predictions": top5_results,
+             "top1":top1_name
                }
 
                     
 
 chooser = YOLOChooser()
 
+def routing (top1_name,image_path):
+     if top1_name == "Knee":
+         return knee(image_path)
+ 
+     return "Bu bölge için henüz bir analiz modeli bulunmamaktadır"
+
+def knee(image_path):
+     model=chooser.models["Knee"]
+     result=model(image_path)[0]
+
+     degree = result.probs.top1
+     confidence = result.probs.top1conf
+
+     return {f"%{confidence*100} ile {degree} derece kireçlenme tespi edildi"}
+
 @router.post("/detect/")
 async def detect_xray(files: List[UploadFile] = File(...)):
 
         os.makedirs("temp",exist_ok=True)
-        results=[]
-
+        results =[]
+    
         for file in files:
              
              #geçici dosya yolu oluştur
@@ -92,13 +112,19 @@ async def detect_xray(files: List[UploadFile] = File(...)):
              #AI pipeline çalıştır
 
              result = chooser.predict(temp_path)
+             top1_name=result["top1"]   #resulttan döndürülen dict formatından  sadece top1 ı çekmek için oluşturulan liste
+             analysis = routing(top1_name,temp_path)
+
+
 
              #dosya adı ile birlikte kaydet
              results.append({
                   "file":file.filename,
-                  "result":result
+                  "result":result,
+                  "analysis":analysis
              })
         return {
              "total_files":len(results),
              "results":results
         }
+ 
