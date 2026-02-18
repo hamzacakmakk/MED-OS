@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FileUpload } from './components/FileUpload';
 import { ResultDisplay } from './components/ResultDisplay';
-import { Loader2, Send } from 'lucide-react';
+import { ThemeToggle } from './components/ThemeToggle';
+import { Loader2, Send, Sparkles, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -23,8 +25,6 @@ function App() {
     });
 
     try {
-      // Replace with your actual backend endpoint
-      // Assuming localhost:8000 for now, user might need to configure this
       const response = await axios.post('http://localhost:8000/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -33,61 +33,117 @@ function App() {
       setResult(response.data);
     } catch (err) {
       console.error('Upload failed:', err);
-      setError('Failed to upload files. Please check the backend connection.');
+      setError('Dosya yükleme başarısız oldu. Backend bağlantısını kontrol edin.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-4">
-            File Analyzer
-          </h1>
-          <p className="text-lg text-slate-600">
-            Upload your files to analyze and process them instantly.
-          </p>
-        </div>
+    <div className="min-h-screen relative overflow-hidden transition-colors duration-500
+      bg-gradient-to-br from-gray-50 via-white to-gray-100
+      dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
 
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden p-8 space-y-8">
+      {/* Background decorative elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-violet-400/20 to-purple-500/20 dark:from-violet-500/10 dark:to-purple-600/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-gradient-to-br from-blue-400/15 to-cyan-500/15 dark:from-blue-500/10 dark:to-cyan-600/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-gradient-to-br from-pink-400/15 to-rose-500/15 dark:from-pink-500/10 dark:to-rose-600/10 rounded-full blur-3xl" />
+      </div>
+
+      {/* Navbar */}
+      <nav className="relative z-10 flex items-center justify-between px-6 sm:px-10 py-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/30">
+            <Zap size={20} className="text-white" />
+          </div>
+          <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
+            File<span className="text-violet-600 dark:text-violet-400">Analyzer</span>
+          </span>
+        </div>
+        <ThemeToggle />
+      </nav>
+
+      {/* Main Content */}
+      <main className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-100/80 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 text-violet-700 dark:text-violet-300 text-xs font-semibold mb-5">
+            <Sparkles size={14} />
+            Dosya Analiz Platformu
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-4">
+            Dosyalarınızı{' '}
+            <span className="bg-gradient-to-r from-violet-600 to-purple-600 dark:from-violet-400 dark:to-purple-400 bg-clip-text text-transparent">
+              Analiz Edin
+            </span>
+          </h1>
+          <p className="text-base text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+            Dosyalarınızı yükleyin ve anında sonuçlarınızı görün.
+          </p>
+        </motion.div>
+
+        {/* Upload Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="rounded-3xl p-6 sm:p-8 space-y-6
+            bg-white/70 dark:bg-white/5 backdrop-blur-xl
+            border border-gray-200/80 dark:border-white/10
+            shadow-xl shadow-gray-200/50 dark:shadow-purple-500/5"
+        >
           <FileUpload files={files} setFiles={setFiles} />
 
-          <div className="flex justify-end">
-            <button
+          {/* Send Button */}
+          <div className="flex justify-end pt-2">
+            <motion.button
               onClick={handleSend}
               disabled={files.length === 0 || loading}
+              whileHover={files.length > 0 && !loading ? { scale: 1.03 } : {}}
+              whileTap={files.length > 0 && !loading ? { scale: 0.97 } : {}}
               className={`
-                flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all
+                flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-white text-sm
+                transition-all duration-300 shadow-lg
                 ${files.length === 0 || loading
-                  ? 'bg-slate-300 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-blue-500/30 active:scale-95'}
+                  ? 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed shadow-none'
+                  : 'bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-violet-500/30 hover:shadow-violet-500/50'}
               `}
             >
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin" size={20} />
-                  Processing...
+                  <Loader2 className="animate-spin" size={18} />
+                  İşleniyor...
                 </>
               ) : (
                 <>
-                  <Send size={20} />
-                  Analyze Files
+                  <Send size={18} />
+                  Dosyaları Gönder
                 </>
               )}
-            </button>
+            </motion.button>
           </div>
 
+          {/* Error */}
           {error && (
-            <div className="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20 text-sm"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
+        {/* Results */}
         <ResultDisplay data={result} />
-      </div>
+      </main>
     </div>
   );
 }
