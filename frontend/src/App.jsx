@@ -25,12 +25,13 @@ function App() {
     });
 
     try {
-      const response = await axios.post('http://localhost:8000/upload', formData, {
+      const response = await axios.post('http://localhost:8000/yolo/detect/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       setResult(response.data);
+      setFiles([]); // Clear files after successful upload and analysis
     } catch (err) {
       console.error('Upload failed:', err);
       setError('Dosya yükleme başarısız oldu. Backend bağlantısını kontrol edin.');

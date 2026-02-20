@@ -19,7 +19,7 @@ function formatFileSize(bytes) {
 
 export function FileUpload({ files, setFiles }) {
     const onDrop = useCallback((acceptedFiles) => {
-        setFiles((prev) => [...prev, ...acceptedFiles]);
+        setFiles(acceptedFiles);
     }, [setFiles]);
 
     const removeFile = (fileToRemove) => {
