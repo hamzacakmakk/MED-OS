@@ -85,21 +85,21 @@ export function ResultDisplay({ data }) {
             // YOLO Sonuçlarını metin olarak toparlıyoruz. Projenin gerçek verisi geldikçe burası şekillenebilir.
             let findingsStr = "";
             if (typeof data === 'object') {
-                 findingsStr = JSON.stringify(data);
-                 // JSON çok uzunsa kırpalım
-                 if(findingsStr.length > 200) findingsStr = findingsStr.substring(0, 200) + "...";
+                findingsStr = JSON.stringify(data);
+                // JSON çok uzunsa kırpalım
+                if (findingsStr.length > 200) findingsStr = findingsStr.substring(0, 200) + "...";
             } else {
-                 findingsStr = String(data);
+                findingsStr = String(data);
             }
-            
+
             const yoloFindings = [`Yapay Zeka Analizi: ${findingsStr}`];
-            
+
             const reqData = {
                 yolo_findings: yoloFindings,
-                blood_test_anomalies: ["CRP Yüksek", "Lökosit (WBC) Yüksek"],
-                patient_info: "Örnek Hasta, 45 Yaş"
+                blood_test_anomalies: [], // Şimdilik kan tahlili verisi gerçekte gelene kadar boş
+                patient_info: "Bilinmiyor" // Şimdilik yaş/isim bilgisi boş
             };
-            
+
             const response = await axios.post('http://localhost:8000/api/generate-report', reqData);
             setReport(response.data.report_text);
         } catch (err) {
@@ -144,7 +144,7 @@ export function ResultDisplay({ data }) {
                             {reportLoading ? <Loader2 size={14} className="animate-spin" /> : <FileText size={14} />}
                             {reportLoading ? 'Üretiliyor...' : 'Otomatik Rapor Üret'}
                         </motion.button>
-                        
+
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -168,13 +168,13 @@ export function ResultDisplay({ data }) {
 
             {/* ERROR DISPLAY */}
             {reportError && (
-                 <motion.div
-                 initial={{ opacity: 0, height: 0 }}
-                 animate={{ opacity: 1, height: 'auto' }}
-                 className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20 text-sm"
-               >
-                 {reportError}
-               </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20 text-sm"
+                >
+                    {reportError}
+                </motion.div>
             )}
 
             {/* REPORT DISPLAY SECTION */}
@@ -209,7 +209,7 @@ export function ResultDisplay({ data }) {
                                 rows={10}
                                 className="w-full bg-white/70 dark:bg-black/20 text-gray-800 dark:text-gray-200 rounded-xl p-4 border border-indigo-100 dark:border-indigo-500/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none font-medium text-sm leading-relaxed custom-scrollbar shadow-inner"
                             />
-                            
+
                             {!approved && (
                                 <div className="mt-5 flex justify-end">
                                     <motion.button

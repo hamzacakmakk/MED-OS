@@ -38,17 +38,25 @@ async def generate_report(request: ReportRequest):
         Sen uzman bir Türk doktorusun. Aşağıdaki bilgileri kullanarak SGK (Sosyal Güvenlik Kurumu) formatına ve 
         resmi tıbbi muayene raporu (Epikriz ve Anamnez) standartlarına uygun, kısa, öz ve profesyonel bir sonuç raporu oluştur.
         
-        Hasta Bilgisi: {request.patient_info}
-        Röntgen/Görüntüleme Bulguları (YOLO Modelinden): {findings_text}
-        Kan Tahlili Anomalileri: {anomalies_text}
+        DİKKAT EDİLECEK KURALLAR (Anti-Hallucination & Format):
+        1. KESİNLİKLE HAYALİ BİLGİ UYDURMA. Hastanın şikayeti, yaşı, cinsiyeti veya travma öyküsü sana iletilmediyse uydurma.
+        2. Sana verilmeyen tüm durumlar için "Bilinmiyor", "Sağlanmadı" veya "Bulgu yok" ifadelerini kullan.
+        3. Eğer 'Kan Tahlili Anomalileri' kısmında veri yoksa, "Laboratuvar bulgusu yüklenmedi" veya "Anomali yok" yaz.
+        4. HİÇBİR ŞEKİLDE markdown formatı KULLANMA. Metin içindeki kalınlaştırmalar için yıldız (*) sembollerini kullanma, tamamen düz metin olsun.
+        5. YOLO bulgularında gelen etiketler (labels), sınıflar (classes) ve olasılık yüzdelerini o hastalığın tıbbi terminolojisine (Örn: kırık, dejenerasyon, tümör, osteoartrit vb.) uygun olarak yorumla. Sadece elindeki etiketlerin ne anlama geldiğini kendi tıbbi bilginle klinik bir bulguya çevir; başka hastalık uydurma.
+
+        GELEN VERİLER:
+        - Hasta Bilgisi: {request.patient_info}
+        - Röntgen/Görüntüleme Bulguları (YOLO Modelinden): {findings_text}
+        - Kan Tahlili Anomalileri: {anomalies_text}
         
-        Lütfen raporu şu başlıklara göre düzenle:
-        - ŞİKAYET VE ANAMNEZ
-        - FİZİK VE RADYOLOJİK MUAYENE BULGULARI
-        - LABORATUVAR BULGULARI
-        - TANI VE KARAR (Epikriz)
+        Lütfen raporu şu başlıklara göre düzenle (başlıkları BÜYÜK HARFLE ve markdown kullanmadan düz metin olarak yaz):
+        ŞİKAYET VE ANAMNEZ
+        FİZİK VE RADYOLOJİK MUAYENE BULGULARI
+        LABORATUVAR BULGULARI
+        TANI VE KARAR (Epikriz)
         
-        Gereksiz uzatmalardan kaçın, hekimin hızlıca okuyup "Onayla" diyebileceği netlikte tıbbi bir dil kullan.
+        Gereksiz uzatmalardan kaçın, hekimin hızlıca okuyup "Onayla" diyebileceği netlikte düz metin (plain text) bir dil kullan.
         """
 
         response = client.models.generate_content(
