@@ -15,7 +15,7 @@ function JsonValue({ value, depth = 0 }) {
         if (value.length === 0) return <span className="text-gray-400">[]</span>;
         return (
             <div className="inline">
-                <button onClick={() => setExpanded(!expanded)} className="text-gray-400 hover:text-violet-500 transition-colors inline-flex items-center gap-0.5">
+                <button onClick={() => setExpanded(!expanded)} className="text-gray-400 hover:text-rose-500 transition-colors inline-flex items-center gap-0.5">
                     {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     <span className="text-xs text-gray-400">[{value.length}]</span>
                 </button>
@@ -38,7 +38,7 @@ function JsonValue({ value, depth = 0 }) {
         if (keys.length === 0) return <span className="text-gray-400">{'{}'}</span>;
         return (
             <div className="inline">
-                <button onClick={() => setExpanded(!expanded)} className="text-gray-400 hover:text-violet-500 transition-colors inline-flex items-center gap-0.5">
+                <button onClick={() => setExpanded(!expanded)} className="text-gray-400 hover:text-rose-500 transition-colors inline-flex items-center gap-0.5">
                     {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     <span className="text-xs text-gray-400">{'{' + keys.length + '}'}</span>
                 </button>
@@ -46,7 +46,7 @@ function JsonValue({ value, depth = 0 }) {
                     <div className="ml-5 border-l-2 border-gray-200 dark:border-gray-700 pl-3">
                         {keys.map((key, i) => (
                             <div key={key} className="py-0.5">
-                                <span className="text-purple-600 dark:text-purple-400 font-medium">"{key}"</span>
+                                <span className="text-rose-600 dark:text-rose-400 font-medium">"{key}"</span>
                                 <span className="text-gray-400 mx-1">:</span>
                                 <JsonValue value={value[key]} depth={depth + 1} />
                                 {i < keys.length - 1 && <span className="text-gray-400">,</span>}
@@ -116,10 +116,10 @@ export function ResultDisplay({ data }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="w-full rounded-2xl overflow-hidden
-            bg-white dark:bg-white/5 backdrop-blur-xl
+                className="w-full rounded-3xl overflow-hidden
+            bg-white dark:bg-white/5
             border border-gray-200 dark:border-white/10
-            shadow-xl dark:shadow-purple-500/5"
+            shadow-xl dark:shadow-white/5"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">
@@ -137,9 +137,9 @@ export function ResultDisplay({ data }) {
                             whileTap={{ scale: 0.95 }}
                             onClick={handleGenerateReport}
                             disabled={reportLoading}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                    text-white bg-gradient-to-r from-emerald-500 to-teal-500
-                    hover:from-emerald-400 hover:to-teal-400 shadow-md shadow-emerald-500/20 transition-all disabled:opacity-75"
+                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold
+                    text-white bg-emerald-500
+                    hover:bg-emerald-400 shadow-md shadow-emerald-500/20 transition-all disabled:opacity-75"
                         >
                             {reportLoading ? <Loader2 size={14} className="animate-spin" /> : <FileText size={14} />}
                             {reportLoading ? 'Üretiliyor...' : 'Otomatik Rapor Üret'}
@@ -149,9 +149,9 @@ export function ResultDisplay({ data }) {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={handleCopy}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400
-                    bg-gray-50 dark:bg-white/5 hover:bg-violet-50 dark:hover:bg-violet-500/10
+                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium
+                    text-gray-500 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400
+                    bg-gray-50 dark:bg-white/5 hover:bg-rose-50 dark:hover:bg-rose-500/10
                     border border-gray-200 dark:border-white/10 transition-all"
                         >
                             {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
@@ -171,7 +171,7 @@ export function ResultDisplay({ data }) {
                 <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20 text-sm"
+                    className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-2xl border border-red-200 dark:border-red-500/20 text-sm"
                 >
                     {reportError}
                 </motion.div>
@@ -185,8 +185,8 @@ export function ResultDisplay({ data }) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.98 }}
                         transition={{ duration: 0.4 }}
-                        className="w-full rounded-2xl overflow-hidden
-                        bg-gradient-to-br from-indigo-50/80 to-blue-50/50 dark:from-indigo-950/40 dark:to-blue-900/20 backdrop-blur-xl
+                        className="w-full rounded-3xl overflow-hidden
+                        bg-indigo-50/80 dark:bg-indigo-950/40
                         border border-indigo-200/50 dark:border-indigo-500/20
                         shadow-2xl dark:shadow-indigo-500/10"
                     >
@@ -207,7 +207,7 @@ export function ResultDisplay({ data }) {
                                 readOnly
                                 value={report}
                                 rows={10}
-                                className="w-full bg-white/70 dark:bg-black/20 text-gray-800 dark:text-gray-200 rounded-xl p-4 border border-indigo-100 dark:border-indigo-500/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none font-medium text-sm leading-relaxed custom-scrollbar shadow-inner"
+                                className="w-full bg-white/70 dark:bg-black/20 text-gray-800 dark:text-gray-200 rounded-2xl p-4 border border-indigo-100 dark:border-indigo-500/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none font-medium text-sm leading-relaxed custom-scrollbar shadow-inner"
                             />
 
                             {!approved && (
@@ -216,9 +216,9 @@ export function ResultDisplay({ data }) {
                                         whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
                                         onClick={() => setApproved(true)}
-                                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white
-                                        bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500
-                                        shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all"
+                                        className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white
+                                        bg-rose-600 hover:bg-rose-500
+                                        shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 transition-all"
                                     >
                                         <CheckCircle size={18} />
                                         Hekim Olarak Onayla
