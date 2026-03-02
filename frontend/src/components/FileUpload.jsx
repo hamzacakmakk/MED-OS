@@ -35,29 +35,24 @@ export function FileUpload({ files, setFiles }) {
             {/* Dropzone */}
             <motion.div
                 {...getRootProps()}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+                whileHover={{ scale: 1.005 }}
+                whileTap={{ scale: 0.995 }}
                 className={`
-          relative p-10 border-2 border-dashed rounded-2xl cursor-pointer
+          relative p-10 border-2 border-dashed rounded-3xl cursor-pointer
           flex flex-col items-center justify-center text-center
           transition-all duration-300 overflow-hidden group
           ${isDragActive
-                        ? 'border-violet-500 bg-violet-500/10 dark:bg-violet-500/5'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-violet-400 dark:hover:border-violet-500 bg-white/50 dark:bg-white/5 hover:bg-violet-50/50 dark:hover:bg-violet-500/5'}
+                        ? 'border-rose-500 bg-rose-50 dark:bg-rose-500/10'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-rose-400 dark:hover:border-rose-500 bg-gray-50 dark:bg-white/5 hover:bg-rose-50/50 dark:hover:bg-rose-500/5'}
         `}
             >
                 <input {...getInputProps()} />
-
-                {/* Animated background blobs */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-violet-400/20 to-purple-400/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
-
                 <motion.div
                     animate={isDragActive ? { y: [0, -8, 0], scale: [1, 1.1, 1] } : {}}
                     transition={{ duration: 0.6, repeat: isDragActive ? Infinity : 0 }}
                     className="relative z-10"
                 >
-                    <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-violet-500/30 mx-auto">
+                    <div className="w-20 h-20 bg-rose-500 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-rose-500/30 mx-auto">
                         <Upload size={36} className="text-white" />
                     </div>
                 </motion.div>
@@ -66,7 +61,7 @@ export function FileUpload({ files, setFiles }) {
                     {isDragActive ? 'Dosyaları buraya bırakın!' : 'Dosyaları sürükleyip bırakın'}
                 </h3>
                 <p className="relative z-10 text-sm text-gray-500 dark:text-gray-400 mt-2">
-                    veya <span className="text-violet-600 dark:text-violet-400 font-semibold">gözatmak için tıklayın</span>
+                    veya <span className="text-rose-600 dark:text-rose-400 font-semibold">gözatmak için tıklayın</span>
                 </p>
             </motion.div>
 
@@ -75,7 +70,7 @@ export function FileUpload({ files, setFiles }) {
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <h4 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                            <span className="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs font-bold">
+                            <span className="w-7 h-7 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold">
                                 {files.length}
                             </span>
                             Dosya Seçildi
@@ -99,12 +94,12 @@ export function FileUpload({ files, setFiles }) {
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, x: -20, scale: 0.9 }}
                                         transition={{ duration: 0.2 }}
-                                        className="flex items-center justify-between p-3 rounded-xl
+                                        className="flex items-center justify-between p-3 rounded-2xl
                       bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10
-                      hover:shadow-md dark:hover:shadow-purple-500/5 transition-all group/item"
+                      hover:shadow-md dark:hover:shadow-rose-500/5 transition-all group/item"
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="p-2.5 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-500/10 dark:to-purple-500/10 rounded-xl text-violet-600 dark:text-violet-400">
+                                            <div className="p-2.5 bg-rose-50 dark:bg-rose-500/10 rounded-full text-rose-600 dark:text-rose-400">
                                                 <IconComponent size={20} />
                                             </div>
                                             <div className="min-w-0">
@@ -117,7 +112,7 @@ export function FileUpload({ files, setFiles }) {
                                             whileTap={{ scale: 0.9 }}
                                             onClick={() => removeFile(file)}
                                             className="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400
-                        hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover/item:opacity-100"
+                        hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-all opacity-0 group-hover/item:opacity-100"
                                         >
                                             <X size={16} />
                                         </motion.button>

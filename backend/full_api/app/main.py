@@ -25,6 +25,8 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(yolo_choser_router, prefix="/yolo", tags=["Yolo choser"])
+from app.reporting import router as reporting_router
+app.include_router(reporting_router, prefix="/api", tags=["Reporting"])
 
 @app.get("/")
 def read_root():
