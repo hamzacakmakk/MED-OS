@@ -10,11 +10,15 @@ from dotenv import load_dotenv
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
-from google import genai
+import google.generativeai as genai
 try:
-    client = genai.Client(api_key=api_key) if api_key else genai.Client()
+    if api_key:
+        genai.configure(api_key=api_key)
+        client = True
+    else:
+        client = False
 except Exception as e:
-    client = None
+    client = False
     print(f"Failed to initialize Gemini Client: {e}")
 
 class ReportRequest(BaseModel):
@@ -59,10 +63,8 @@ async def generate_report(request: ReportRequest):
         Gereksiz uzatmalardan kaçın, hekimin hızlıca okuyup "Onayla" diyebileceği netlikte düz metin (plain text) bir dil kullan.
         """
 
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt
-        )
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content(prompt)
         
         return ReportResponse(report_text=response.text)
     

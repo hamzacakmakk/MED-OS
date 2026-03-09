@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend/full_api
+    container_name: teknofest-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/full_api:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    build: ./frontend
+    container_name: teknofest-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Yerel makinedeki node_modules ezilmesin diye
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
