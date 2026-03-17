@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 import os
 from pydantic import BaseModel
 from typing import List, Optional
+from google import genai
 
 router = APIRouter()
 

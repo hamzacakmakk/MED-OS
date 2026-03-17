@@ -4,6 +4,13 @@ from typing import List
 import os,shutil,uuid
 import math
 
+
+
+from app.celery_app import celery
+from celery.result import AsyncResult
+
+
+
 router = APIRouter()
 from app.db import supabase
 
@@ -91,7 +98,7 @@ def routing (top1_name,image_path):
      if top1_name=="Skull":
          return skull(image_path)
  
-     return "Bu bölge için henüz bir analiz modeli bulunmamaktadır"
+     return {"analysis": "Bu bölge için henüz bir analiz modeli bulunmamaktadır"}
 
 def knee(image_path):
      model=chooser.models["Knee"]
@@ -100,7 +107,7 @@ def knee(image_path):
      degree = result.probs.top1
      confidence = result.probs.top1conf
 
-     return {f"%{confidence*100} ile {degree} derece kireçlenme tespi edildi"}
+     return {"analysis": f"%{confidence*100} ile {degree} derece kireçlenme tespi edildi"}
 
 
 def skull(image_path):
@@ -226,7 +233,7 @@ def spine(image_path):
          decision = "İleri derece skolyoz. Cerrahi müdahale açısından ortopedi uzmanı değerlendirmesi gereklidir."
      
      return {
-        "analysis_result": f"Cobb Açısı: {cobb_angle}° - {decision}",
+        "analysis": f"Cobb Açısı: {cobb_angle}° - {decision}",
         "cobb_angle_degree": cobb_angle,
         "details": {
             "top_point": {"x": top_vertebra["cx"], "y": top_vertebra["cy"]},
@@ -238,50 +245,50 @@ def spine(image_path):
      
 
 
+
+
 @router.post("/detect/")
 async def detect_xray(files: List[UploadFile] = File(...)):
-    print("1 - endpoint başladı")
+    from app.tasks import full_task
 
     os.makedirs("temp", exist_ok=True)
-    results = []
+
+    tasks = []
 
     for file in files:
-        print("2 - dosya loop başladı")
 
         ext = os.path.splitext(file.filename)[1]
         temp_filename = f"{uuid.uuid4()}{ext}"
         temp_path = os.path.join("temp", temp_filename)
 
-        print("3 - temp path:", temp_path)
-
-        try:
-            print("4 - dosya yazılıyor")
-            with open(temp_path, "wb") as buffer:
+    
+        with open(temp_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
 
-            print("5 - predict başlıyor")
-            result = chooser.predict(temp_path)
+        #celery task başlama kısmı
+        task=full_task.delay(temp_path,file.filename)
 
-            print("6 - routing başlıyor")
-            top1_name = result["top1"]
-            analysis = routing(top1_name, temp_path)
-
-            print("7 - sonuç eklendi")
-            results.append({
-                "file": file.filename,
-                "result": result,
-                "analysis": analysis
+        tasks.append({
+                "file":file.filename,
+                "task_id":task.id
             })
-
-        finally:
-            print("8 - finally çalıştı")
-            if os.path.exists(temp_path):
-                print("9 - dosya siliniyor")
-                os.remove(temp_path)
-                print("10 - silindi")
-
-    print("11 - return ediliyor")
+        
     return {
-        "total_files": len(results),
-        "results": results
-    }
+        "message":"analysis started",
+            "tasks":tasks 
+                  }
+
+@router.get("/task/{task_id}")
+def get_task_status(task_id:str):
+    
+    task = AsyncResult(task_id,app=celery)
+
+    return{
+        "task_id":task_id,
+        "ststus":task.status,
+        "result":task.result
+    }            
+           
+
+
+           

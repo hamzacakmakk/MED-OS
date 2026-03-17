@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+  worker:
+    build: .
+    container_name: celery_worker
+    command: celery -A app.celery_app.celery worker --pool=solo --loglevel=info
+    volumes:
+      - ./backend/full_api:/app
+    working_dir: /app
+    depends_on:
+      - redis
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
