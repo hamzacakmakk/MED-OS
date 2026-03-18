@@ -1,6 +1,12 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:alpine
+    container_name: teknofest-redis
+    ports:
+      - "6379:6379"
+
   backend:
     build: ./backend/full_api
     container_name: teknofest-backend
@@ -10,6 +16,24 @@ services:
       - ./backend/full_api:/app
     environment:
       - PYTHONUNBUFFERED=1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  celery_worker:
+    build: ./backend/full_api
+    container_name: teknofest-celery
+    command: celery -A app.celery_app worker --loglevel=info
+    volumes:
+      - ./backend/full_api:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - backend
 
   frontend:
     build: ./frontend
@@ -18,7 +42,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules # Yerel makinedeki node_modules ezilmesin diye
+      - /app/node_modules
     environment:
       - VITE_API_URL=http://localhost:8000
     depends_on:

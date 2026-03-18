@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
-import { Maximize2, ZoomIn, Contrast, Layout, Settings, ActivitySquare, Play, BoxSelect, Layers, Brain, ToggleLeft, ToggleRight, SplitSquareHorizontal } from 'lucide-react';
+import { Maximize2, ZoomIn, Contrast, Layout, Settings, SquareActivity, Play, BoxSelect, Layers, Brain, ToggleLeft, ToggleRight, SquareSplitHorizontal } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { FileUpload } from '../FileUpload';
 
 const ViewerWorkspace = ({ patient }) => {
     const [aiOverlays, setAiOverlays] = useState({
@@ -11,15 +11,13 @@ const ViewerWorkspace = ({ patient }) => {
 
     if (!patient) {
         return (
-            <div className="flex-1 border-2 border-dashed border-gray-300 rounded-2xl m-6 flex items-center justify-center bg-gray-50/50">
-                <div className="text-center max-w-sm">
-                    <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-500 shadow-inner">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-medical-950">Awaiting Patient Selection</h3>
-                    <p className="text-sm text-text-secondary mt-2">
-                        Please select a patient from the active triage queue on the left to initiate the diagnostic workspace.
+            <div className="flex-1 m-6 flex flex-col items-center justify-center p-8 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-300">
+                <div className="text-center max-w-xl w-full">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Awaiting Patient Selection</h3>
+                    <p className="text-sm text-gray-500 mb-8">
+                        Please select a patient from the active triage queue on the left or upload a new X-ray below to initiate the diagnostic workspace.
                     </p>
+                    <FileUpload onAnalysisComplete={(result) => console.log('Analysis complete:', result)} />
                 </div>
             </div>
         );
@@ -31,7 +29,7 @@ const ViewerWorkspace = ({ patient }) => {
             <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="flex gap-2">
                     <button className="p-2 bg-gray-800/80 hover:bg-gray-700 text-white rounded-lg backdrop-blur-sm transition-colors" title="Zoom/Pan">
-                        <ActivitySquare className="w-5 h-5" />
+                        <SquareActivity className="w-5 h-5" />
                     </button>
                     <button className="p-2 bg-gray-800/80 hover:bg-gray-700 text-white rounded-lg backdrop-blur-sm transition-colors" title="Window Level">
                         <Contrast className="w-5 h-5" />
@@ -110,7 +108,7 @@ const ViewerWorkspace = ({ patient }) => {
 
                     {/* Compare Mode Button */}
                     <button className="mt-2 w-full flex items-center justify-center gap-2 bg-[#27272a] hover:bg-[#3f3f46] border border-[#3f3f46] text-text-primary text-xs font-medium py-1.5 rounded-lg transition-colors">
-                        <SplitSquareHorizontal className="w-3.5 h-3.5" />
+                        <SquareSplitHorizontal className="w-3.5 h-3.5" />
                         Compare Prior
                     </button>
                 </div>

@@ -1,7 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, File, X, FileText, FileImage, FileCode } from 'lucide-react';
+import { Upload, File, X, FileText, FileImage, FileCode, Play, Loader2, CircleCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { uploadXRay, checkTaskStatus } from '../services/api';
 
 function getFileIcon(fileName) {
     const ext = fileName.split('.').pop().toLowerCase();
@@ -17,16 +18,71 @@ function formatFileSize(bytes) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-export function FileUpload({ files, setFiles }) {
+export function FileUpload({ onAnalysisComplete }) {
+    const [files, setFiles] = useState([]);
+    const [taskId, setTaskId] = useState(null);
+    const [status, setStatus] = useState('idle'); // idle, uploading, processing, completed, error
+    const [result, setResult] = useState(null);
+
     const onDrop = useCallback((acceptedFiles) => {
         setFiles(acceptedFiles);
-    }, [setFiles]);
+        setStatus('idle');
+        setTaskId(null);
+        setResult(null);
+    }, []);
 
     const removeFile = (fileToRemove) => {
         setFiles((prev) => prev.filter((file) => file !== fileToRemove));
     };
 
-    const clearAll = () => setFiles([]);
+    const clearAll = () => {
+        setFiles([]);
+        setStatus('idle');
+        setTaskId(null);
+        setResult(null);
+    };
+
+    const handleUpload = async () => {
+        if (files.length === 0) return;
+        setStatus('uploading');
+        try {
+            const data = await uploadXRay(files);
+            if (data.tasks && data.tasks.length > 0) {
+                setTaskId(data.tasks[0].task_id);
+                setStatus('processing');
+            } else {
+                setStatus('error');
+            }
+        } catch (error) {
+            console.error('Upload failed', error);
+            setStatus('error');
+        }
+    };
+
+    useEffect(() => {
+        let interval = null;
+        if (status === 'processing' && taskId) {
+            interval = setInterval(async () => {
+                try {
+                    const data = await checkTaskStatus(taskId);
+                    if (data.status === 'SUCCESS') {
+                        setStatus('completed');
+                        setResult(data.result);
+                        clearInterval(interval);
+                        if (onAnalysisComplete) onAnalysisComplete(data.result);
+                    } else if (data.status === 'FAILURE') {
+                        setStatus('error');
+                        clearInterval(interval);
+                    }
+                } catch (error) {
+                    console.error('Polling failed', error);
+                }
+            }, 3000);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [status, taskId, onAnalysisComplete]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -42,8 +98,8 @@ export function FileUpload({ files, setFiles }) {
           flex flex-col items-center justify-center text-center
           transition-all duration-300 overflow-hidden group
           ${isDragActive
-                        ? 'border-rose-500 bg-rose-50 dark:bg-rose-500/10'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-rose-400 dark:hover:border-rose-500 bg-gray-50 dark:bg-white/5 hover:bg-rose-50/50 dark:hover:bg-rose-500/5'}
+                        ? 'border-medical-500 bg-medical-50 dark:bg-medical-500/10'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-medical-400 dark:hover:border-medical-500 bg-gray-50 dark:bg-white/5 hover:bg-medical-50/50 dark:hover:bg-medical-500/5'}
         `}
             >
                 <input {...getInputProps()} />
@@ -52,25 +108,25 @@ export function FileUpload({ files, setFiles }) {
                     transition={{ duration: 0.6, repeat: isDragActive ? Infinity : 0 }}
                     className="relative z-10"
                 >
-                    <div className="w-20 h-20 bg-rose-500 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-rose-500/30 mx-auto">
+                    <div className="w-20 h-20 bg-medical-500 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-medical-500/30 mx-auto">
                         <Upload size={36} className="text-white" />
                     </div>
                 </motion.div>
 
                 <h3 className="relative z-10 text-xl font-bold text-gray-800 dark:text-gray-100">
-                    {isDragActive ? 'Dosyaları buraya bırakın!' : 'Dosyaları sürükleyip bırakın'}
+                    {isDragActive ? 'Dosyaları buraya bırakın!' : 'Röntgen Yüklemek İçin Sürükleyin'}
                 </h3>
                 <p className="relative z-10 text-sm text-gray-500 dark:text-gray-400 mt-2">
-                    veya <span className="text-rose-600 dark:text-rose-400 font-semibold">gözatmak için tıklayın</span>
+                    veya <span className="text-medical-600 dark:text-medical-400 font-semibold">gözatmak için tıklayın</span>
                 </p>
             </motion.div>
 
-            {/* File List */}
+            {/* File List & Status */}
             {files.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h4 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                            <span className="w-7 h-7 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold">
+                            <span className="w-7 h-7 rounded-full bg-medical-100 dark:bg-medical-500/20 text-medical-600 dark:text-medical-400 flex items-center justify-center text-xs font-bold">
                                 {files.length}
                             </span>
                             Dosya Seçildi
@@ -83,7 +139,7 @@ export function FileUpload({ files, setFiles }) {
                         </button>
                     </div>
 
-                    <div className="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                         <AnimatePresence>
                             {files.map((file, index) => {
                                 const IconComponent = getFileIcon(file.name);
@@ -93,13 +149,10 @@ export function FileUpload({ files, setFiles }) {
                                         initial={{ opacity: 0, y: 12, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, x: -20, scale: 0.9 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="flex items-center justify-between p-3 rounded-2xl
-                      bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10
-                      hover:shadow-md dark:hover:shadow-rose-500/5 transition-all group/item"
+                                        className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10"
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="p-2.5 bg-rose-50 dark:bg-rose-500/10 rounded-full text-rose-600 dark:text-rose-400">
+                                            <div className="p-2.5 bg-medical-50 dark:bg-medical-500/10 rounded-full text-medical-600 dark:text-medical-400">
                                                 <IconComponent size={20} />
                                             </div>
                                             <div className="min-w-0">
@@ -107,19 +160,45 @@ export function FileUpload({ files, setFiles }) {
                                                 <p className="text-xs text-gray-400 dark:text-gray-500">{formatFileSize(file.size)}</p>
                                             </div>
                                         </div>
-                                        <motion.button
-                                            whileHover={{ scale: 1.15 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            onClick={() => removeFile(file)}
-                                            className="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400
-                        hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-all opacity-0 group-hover/item:opacity-100"
-                                        >
-                                            <X size={16} />
-                                        </motion.button>
+                                        {status === 'idle' && (
+                                            <button onClick={() => removeFile(file)} className="p-1.5 text-gray-400 hover:text-red-500">
+                                                <X size={16} />
+                                            </button>
+                                        )}
                                     </motion.div>
                                 );
                             })}
                         </AnimatePresence>
+                    </div>
+
+                    {/* Action Button & Status Info */}
+                    <div className="pt-2">
+                        {status === 'idle' && (
+                            <button
+                                onClick={handleUpload}
+                                className="w-full flex items-center justify-center gap-2 bg-medical-600 hover:bg-medical-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg"
+                            >
+                                <Play className="w-5 h-5" /> Analizi Başlat
+                            </button>
+                        )}
+                        {status === 'uploading' && (
+                            <div className="w-full flex items-center justify-center gap-2 bg-medical-900/50 text-medical-300 border border-medical-800 py-3 rounded-xl font-bold">
+                                <Loader2 className="w-5 h-5 animate-spin" /> Yükleniyor...
+                            </div>
+                        )}
+                        {status === 'processing' && (
+                            <div className="w-full flex items-center justify-center gap-2 bg-amber-900/50 text-amber-300 border border-amber-800 py-3 rounded-xl font-bold">
+                                <Loader2 className="w-5 h-5 animate-spin" /> Yapay Zeka İşliyor... (Task ID Bekleniyor)
+                            </div>
+                        )}
+                        {status === 'completed' && (
+                            <div className="w-full flex flex-col items-center justify-center gap-2 bg-emerald-900/50 text-emerald-300 border border-emerald-800 py-3 rounded-xl font-bold">
+                                <span className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5" /> Analiz Tamamlandı</span>
+                            </div>
+                        )}
+                        {status === 'error' && (
+                            <div className="w-full text-center text-red-500 py-2 font-bold">Bir hata oluştu.</div>
+                        )}
                     </div>
                 </div>
             )}

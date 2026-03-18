@@ -46,7 +46,7 @@ class YOLOChooser:
         indexed_probs = list(enumerate(probs)) #olasılıkları indexleri ile birlikte listeler
         sorted_probs = sorted(indexed_probs,key=lambda x: x[1],reverse=True) # result.props.top1 ile modelin en yüksek güvenle tahmin ettiği sınıfın id sini alırız bu id yi int e çeviririz çünkü id genellikle int olur
 #x bir tuppledır 1,0098 gibi x[0] indexi id yi x[1] ise olasılığı temsil eder sorted fonksiyonu ile bu listeyi olasılığa göre azalan sırada sıralarız
-        top5 =sorted_probs[:5]
+        top5 = sorted_probs[:5] # type: ignore
 
         top5_results=[
              {
@@ -219,7 +219,7 @@ def spine(image_path):
      if cobb_angle > 90:
         cobb_angle = 180 - cobb_angle
 
-     cobb_angle = round(cobb_angle, 2)
+     cobb_angle = round(cobb_angle, 2) # type: ignore
 
     # 4. Tıbbi Karar Mekanizması (Skolyoz Derecelendirmesi)
      decision = ""
@@ -285,7 +285,7 @@ def get_task_status(task_id:str):
 
     return{
         "task_id":task_id,
-        "ststus":task.status,
+        "status":task.status,
         "result":task.result
     }            
            

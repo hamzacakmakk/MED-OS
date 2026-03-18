@@ -7,9 +7,6 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 email-validator
-HEAD
-os
-
-
+celery[redis]
+redis
 google-genai
-origin/hamza

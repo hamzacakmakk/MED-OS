@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, CheckCircle2, ChevronDown, ActivitySquare, Check, FileText, CheckSquare, XSquare, MessageSquare } from 'lucide-react';
+import { Brain, CircleCheck, ChevronDown, SquareActivity, Check, FileText, SquareCheck, SquareX, MessageSquare } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const AIReportingPanel = ({ patient }) => {
@@ -38,7 +38,7 @@ const AIReportingPanel = ({ patient }) => {
                     </div>
                 </div>
                 <div className="flex-1 p-8 text-center flex flex-col items-center justify-center text-text-tertiary bg-[radial-gradient(#3f3f46_1px,transparent_1px)] [background-size:16px_16px]">
-                    <ActivitySquare className="w-12 h-12 mb-4 opacity-30" />
+                    <SquareActivity className="w-12 h-12 mb-4 opacity-30" />
                     <p className="text-sm">The automated AI reporting system will initialize once a patient is selected and imaging data is loaded.</p>
                 </div>
             </aside>
@@ -62,7 +62,7 @@ const AIReportingPanel = ({ patient }) => {
                     <div>
                         <h2 className="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2">
                             Gemini Epikriz
-                            {reportReady && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                            {reportReady && <CircleCheck className="w-4 h-4 text-emerald-500" />}
                         </h2>
                         <p className="text-xs text-medical-400 font-medium mt-0.5">
                             {isGenerating ? "Analyzing Imaging & HL7 Data..." : "Analysis Complete"}
@@ -112,10 +112,10 @@ const AIReportingPanel = ({ patient }) => {
                             {/* Doctor Feedback Buttons Overlay */}
                             <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button className="px-2 py-1 bg-[#18181b] border border-[#3f3f46] hover:bg-emerald-900/30 hover:text-emerald-400 hover:border-emerald-800/50 text-text-tertiary rounded-md transition-colors shadow-sm text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" title="Accept Finding">
-                                    <CheckSquare className="w-3.5 h-3.5" /> Accept
+                                    <SquareCheck className="w-3.5 h-3.5" /> Accept
                                 </button>
                                 <button className="px-2 py-1 bg-[#18181b] border border-[#3f3f46] hover:bg-red-900/30 hover:text-red-400 hover:border-red-800/50 text-text-tertiary rounded-md transition-colors shadow-sm text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" title="Reject Finding">
-                                    <XSquare className="w-3.5 h-3.5" /> Reject
+                                    <SquareX className="w-3.5 h-3.5" /> Reject
                                 </button>
                                 <button className="px-2 py-1 bg-[#18181b] border border-[#3f3f46] hover:bg-blue-900/30 hover:text-blue-400 hover:border-blue-800/50 text-text-tertiary rounded-md transition-colors shadow-sm text-[10px] font-bold uppercase tracking-wider flex items-center gap-1" title="Request Explanation / Chat">
                                     <MessageSquare className="w-3.5 h-3.5" /> Discuss
