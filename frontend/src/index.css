@@ -1,48 +1,34 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-/* Define dark mode variant based on html.dark class */
-@custom-variant dark (&:where(html.dark, html.dark *));
+@theme {
+  --color-medical-50: #eff6ff;
+  --color-medical-100: #dbeafe;
+  --color-medical-200: #bfdbfe;
+  --color-medical-300: #93c5fd;
+  --color-medical-400: #60a5fa;
+  --color-medical-500: #3b82f6;
+  --color-medical-600: #2563eb;
+  --color-medical-700: #1d4ed8;
+  --color-medical-800: #1e40af;
+  --color-medical-900: #1e3a8a;
+  --color-medical-950: #172554;
 
-:root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --color-background: #09090b;
+  --color-surface: #18181b;
+  --color-surface-hover: #27272a;
+  --color-surface-border: #3f3f46;
+
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-tertiary: #71717a;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-/* Custom scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 999px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #374151;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
-}
-
-/* Selection color */
-::selection {
-  background-color: rgba(244, 63, 94, 0.3);
+@layer base {
+  body {
+    @apply bg-background text-text-primary antialiased font-sans;
+  }
 }

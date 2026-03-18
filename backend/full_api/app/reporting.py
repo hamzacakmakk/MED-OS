@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException
 import os
 from pydantic import BaseModel
 from typing import List, Optional
+from google import genai
 
 router = APIRouter()
 
-# IMPORTANT: Ensure GEMINI_API_KEY is set in your .env file
 from dotenv import load_dotenv
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
