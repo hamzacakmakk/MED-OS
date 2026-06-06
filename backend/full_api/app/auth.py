@@ -4,10 +4,14 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime,timedelta
 from jose import JWTError,jwt
 from passlib.context import CryptContext
+import os
+from dotenv import load_dotenv
 
 from app.db import supabase
 
-SECRET_KEY="d3acc1b74f06426e439e0d85d635c528a58131a3cff2b98640b93d8b6ca8e4cb"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
