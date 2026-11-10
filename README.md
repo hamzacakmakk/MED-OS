@@ -1,5 +1,7 @@
 # MED-OS
 
+[![CI](https://github.com/hamzacakmakk/MED-OS/actions/workflows/ci.yml/badge.svg)](https://github.com/hamzacakmakk/MED-OS/actions/workflows/ci.yml)
+
 An AI-assisted radiology workstation. Upload an X-ray, and the system decides which body region it is
 looking at, runs the matching detection model, and drafts a Turkish clinical report from the findings.
 
