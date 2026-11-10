@@ -104,10 +104,16 @@ def knee(image_path):
      model=chooser.models["Knee"]
      result=model(image_path)[0]
 
-     degree = result.probs.top1
-     confidence = result.probs.top1conf
+     degree = int(result.probs.top1)
+     confidence = float(result.probs.top1conf)
+     label = str(result.names.get(degree, degree))
 
-     return {"analysis": f"%{confidence*100} ile {degree} derece kireçlenme tespi edildi"}
+     return {
+        "analysis": f"%{confidence*100:.1f} güvenle {label} derece kireçlenme tespit edildi",
+        "kl_grade": degree,
+        "grade_label": label,
+        "confidence": confidence
+    }
 
 
 def skull(image_path):
@@ -240,7 +246,8 @@ def spine(image_path):
             "apex_point": {"x": apex_vertebra["cx"], "y": apex_vertebra["cy"]},
             "bottom_point": {"x": bottom_vertebra["cx"], "y": bottom_vertebra["cy"]}
         },
-        "detected_vertebrae_count": len(centers)
+        "detected_vertebrae_count": len(centers),
+        "vertebrae": [c["box"] for c in centers]
     }
      
 
@@ -285,7 +292,8 @@ def get_task_status(task_id:str):
 
     return{
         "task_id":task_id,
-        "ststus":task.status,
+        "status":task.status,
+        "ststus":task.status,  # kept for older clients
         "result":task.result
     }            
            

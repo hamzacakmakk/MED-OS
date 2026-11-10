@@ -1,1 +1,8 @@
 .env
+__pycache__/
+*.pyc
+.venv/
+backend/full_api/temp/
+node_modules/
+dist/
+.claude/

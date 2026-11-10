@@ -1,34 +1,89 @@
 @import "tailwindcss";
 
-@theme {
-  --color-medical-50: #eff6ff;
-  --color-medical-100: #dbeafe;
-  --color-medical-200: #bfdbfe;
-  --color-medical-300: #93c5fd;
-  --color-medical-400: #60a5fa;
-  --color-medical-500: #3b82f6;
-  --color-medical-600: #2563eb;
-  --color-medical-700: #1d4ed8;
-  --color-medical-800: #1e40af;
-  --color-medical-900: #1e3a8a;
-  --color-medical-950: #172554;
+@custom-variant dark (&:where(.dark, .dark *));
 
-  --color-background: #09090b;
-  --color-surface: #18181b;
-  --color-surface-hover: #27272a;
-  --color-surface-border: #3f3f46;
+:root {
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --panel-2: #f0f2f4;
+  --line: #e1e4e8;
+  --fg: #15181b;
+  --fg-2: #59616b;
+  --fg-3: #8b939c;
+  --accent: #1d64d8;
+  --accent-hover: #1854b8;
+  --accent-soft: #e6eefb;
+  --ok: #1b7f4c;
+  --warn: #9a5c00;
+  --bad: #c43535;
+  --viewer: #0a0b0c;
+  --annot: #f2c230;
+  color-scheme: light;
+}
 
-  --color-text-primary: #f4f4f5;
-  --color-text-secondary: #a1a1aa;
-  --color-text-tertiary: #71717a;
+.dark {
+  --bg: #0d0f11;
+  --panel: #14171a;
+  --panel-2: #1a1e22;
+  --line: #252a2f;
+  --fg: #e5e7ea;
+  --fg-2: #9aa2ab;
+  --fg-3: #69717a;
+  --accent: #4d8cf5;
+  --accent-hover: #6a9ff7;
+  --accent-soft: #1a2638;
+  --ok: #42b37f;
+  --warn: #dba13c;
+  --bad: #ec6060;
+  --viewer: #060707;
+  color-scheme: dark;
+}
 
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-viewer: var(--viewer);
+  --color-annot: var(--annot);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
 
 @layer base {
-  body {
-    @apply bg-background text-text-primary antialiased font-sans;
+  html,
+  body,
+  #root {
+    height: 100%;
   }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    font-size: 14px;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
 }

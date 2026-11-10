@@ -3,6 +3,8 @@
 An AI-assisted radiology workstation. Upload an X-ray, and the system decides which body region it is
 looking at, runs the matching detection model, and drafts a Turkish clinical report from the findings.
 
+![MED-OS workstation: a full-spine radiograph with the spine model's vertebra detections and Cobb angle estimate](docs/screenshot.png)
+
 > **Research prototype — not a medical device.** Nothing here is validated, certified, or cleared by any
 > regulator. Model output is not a diagnosis and must never be used to make a clinical decision about a
 > real patient. See [Status](#status) for what is actually finished.
@@ -54,11 +56,21 @@ interpreting labels it was actually given. Output is plain text, ready for a phy
 **Backend** — FastAPI · Ultralytics YOLO · ONNX Runtime · Celery + Redis · Supabase (Postgres + Storage) ·
 python-jose + passlib (JWT auth) · Google GenAI
 
-**Frontend** — React 19 · Vite 7 · Tailwind CSS 4 · Zustand · Framer Motion · React Router 7 · axios ·
-react-dropzone · lucide-react
+**Frontend** — React 19 · Vite 7 · Tailwind CSS 4 · Zustand · react-dropzone · lucide-react
 
-The UI is a three-pane clinician dashboard: triage queue on the left, patient header and imaging viewer in
-the center, AI report stream on the right.
+The UI is a three-pane reading workstation wired to the real API:
+
+- **Studies** (left) — drag in one or more X-rays; each is uploaded, queued and polled until the worker
+  finishes. Status is shown per study.
+- **Viewer** (center) — zoom, pan, invert, brightness/contrast, and the model output drawn on the image in
+  image coordinates: detection boxes with labels, or for spine films every detected vertebra plus the
+  top/apex/bottom line used for the Cobb estimate. Keyboard: `+` `-` `0` `I` `O`.
+- **Analysis** (right) — region classification with the top-5 probabilities, region-specific findings
+  (hovering a finding highlights its box), and the report draft: optional clinical context and lab
+  anomalies go to `/api/generate-report`, and the returned text is editable, copyable and downloadable.
+
+Without a backend you can still open **the sample study** (or visit `/?sample`): a full-spine radiograph
+with the output the spine model actually produced for it, saved in `frontend/public/samples/`.
 
 ## Running it
 
@@ -131,11 +143,14 @@ backend/full_api/app/
   models/           classification.onnx + 5 region YOLO weights
 
 frontend/src/
-  pages/Dashboard.jsx
-  components/Sidebar/    TriageQueue, GlobalNav
-  components/Patient/    PatientHeader
-  components/Imaging/    ViewerWorkspace
-  components/AI/         AIReportingPanel
+  App.jsx                  three-pane layout, theme
+  lib/api.js               upload, task polling, report requests
+  lib/store.js             studies state (Zustand)
+  lib/findings.js          normalizes per-region model output for the UI and the report prompt
+  components/StudyList     upload + study queue
+  components/Viewer        image viewer and SVG overlay
+  components/AnalysisPanel region, findings
+  components/ReportPanel   report drafting
 ```
 
 The five `.pt` weights are tracked with Git LFS (`classification.onnx` is not) — run `git lfs install` before cloning.
@@ -146,13 +161,11 @@ Working end to end: upload → async queue → classify → region model → Sup
 
 Known gaps, roughly in priority order:
 
-- `requirements.txt` still contains an unresolved merge conflict and needs pinned versions
+- `requirements.txt` is unpinned
 - `auth.py` is scaffolding — hashing and token helpers exist, but no login/register routes are mounted
 - Root `docker-compose.yml` is empty; the working compose file is `backend/full_api/app/docker.yaml` and covers only Redis and the worker
 - Elbow routing is unimplemented, so elbow images fall through to the default response
-- The frontend triage queue runs on mock patient data
 - No DICOM support yet — uploads are `.jpg`/`.png` only
-- `__pycache__/` and `backend/full_api/temp/` are committed and should be git-ignored
 - No test suite
 
 The longer-term plan — DICOM/PACS, HL7/FHIR, RAG-grounded reporting, KVKK/HIPAA hardening — is written up
